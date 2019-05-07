@@ -1,0 +1,33 @@
+dist: xenial
+language: python
+git:
+  depth: 1
+
+before_install:
+- cat ~/.ssh/config
+- env | sort
+
+install:
+- pip install tox
+
+python:
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
+- '3.7'
+- '3.8-dev'
+- 'pypy2.7'
+- 'pypy3.5'
+- 'pypy3.6'
+
+matrix:
+  include:
+  - python: 3.7
+    env: TOXENV=lint
+
+before_script:
+- TOX_PY="$(sed -e 's/-dev$//' -e 's/\.//' -e 's/$py//' <<< "${TRAVIS_PYTHON_VERSION}")"
+
+script:
+- tox --skip-missing-interpreters false -n -e ${TOXENV:-py${TOX_PY}}
